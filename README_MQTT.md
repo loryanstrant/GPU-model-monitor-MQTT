@@ -15,17 +15,20 @@ The MQTT functionality is configured through environment variables in the docker
 
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
+| `SERVER_NAME` | Identifier for this host; namespaces topics and the HA device so multiple servers can share one broker | container hostname | No |
 | `MQTT_ENABLED` | Enable/disable MQTT publishing | `false` | Yes |
 | `MQTT_HOST` | MQTT broker hostname or IP address | - | Yes (if enabled) |
 | `MQTT_PORT` | MQTT broker port | `1883` | No |
 | `MQTT_SSL` | Enable SSL/TLS encryption | `false` | No |
 | `MQTT_USERNAME` | MQTT broker username | - | No |
 | `MQTT_PASSWORD` | MQTT broker password | - | No |
-| `MQTT_TOPIC_PREFIX` | Prefix for all MQTT topics | `gpu_monitor` | No |
+| `MQTT_TOPIC_PREFIX` | Root prefix for MQTT topics (topics are `<prefix>/<server>/...`) | `gpu_monitor` | No |
 
 ## Published MQTT Topics
 
-When enabled, the following topics are published:
+When enabled, the following topics are published. The effective prefix is
+`<MQTT_TOPIC_PREFIX>/<server>` (e.g. `gpu_monitor/myserver`), so each host gets its own
+subtree and `gpu_monitor/#` still subscribes to all of them:
 
 - `{prefix}/temperature` - GPU temperature in °C
 - `{prefix}/utilization` - GPU utilization percentage
@@ -41,7 +44,7 @@ When enabled, the following topics are published:
 
 The monitor automatically publishes MQTT discovery messages for Home Assistant. Once running, sensors will appear automatically in Home Assistant under:
 
-**Device**: GPU Monitor - {Your GPU Name}
+**Device**: GPU Monitor - {Server Name} - {Your GPU Name}
 
 **Sensors**:
 - GPU Temperature

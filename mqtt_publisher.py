@@ -6,6 +6,7 @@ Publishes GPU metrics and process data to an MQTT broker for Home Assistant inte
 
 import json
 import os
+import socket
 import sys
 import logging
 from datetime import datetime
@@ -29,8 +30,20 @@ class GPUMQTTPublisher:
         self.mqtt_username = os.getenv('MQTT_USERNAME', '').strip()
         self.mqtt_password = os.getenv('MQTT_PASSWORD', '').strip()
         self.mqtt_ssl = os.getenv('MQTT_SSL', 'false').lower() == 'true'
-        self.mqtt_topic_prefix = os.getenv('MQTT_TOPIC_PREFIX', 'gpu_monitor').strip()
         self.mqtt_enabled = os.getenv('MQTT_ENABLED', 'false').lower() == 'true'
+
+        # Server identity — distinguishes multiple hosts publishing to the same broker.
+        # Defaults to the container hostname so single-host setups need no config, but can
+        # be set explicitly (SERVER_NAME=my-box) for a friendly, stable name.
+        server_name = os.getenv('SERVER_NAME', '').strip() or socket.gethostname()
+        self.server_name = server_name
+        self.server_id = self._sanitize(server_name)
+
+        # Effective topic prefix is always namespaced per server:
+        #   <root>/<server>/...  e.g. gpu_monitor/my-box/temperature
+        # A single root ("gpu_monitor") still catches every host via `gpu_monitor/#`.
+        topic_root = os.getenv('MQTT_TOPIC_PREFIX', 'gpu_monitor').strip()
+        self.mqtt_topic_prefix = f"{topic_root}/{self.server_id}"
         
         # GPU configuration
         self.gpu_name = None
@@ -52,9 +65,15 @@ class GPUMQTTPublisher:
             return
         
         logger.info(f"MQTT Publisher initialized for broker: {self.mqtt_host}:{self.mqtt_port}")
+        logger.info(f"Server name: {self.server_name} (id: {self.server_id})")
         logger.info(f"Topic prefix: {self.mqtt_topic_prefix}")
         logger.info(f"SSL enabled: {self.mqtt_ssl}")
-    
+
+    @staticmethod
+    def _sanitize(value):
+        """Sanitize a name for safe use in MQTT topics and HA ids (lowercase, no spaces)."""
+        return value.lower().replace(' ', '_').replace('-', '_')
+
     def get_process_start_time(self, pid):
         """Get the actual start time of a process from the system"""
         try:
@@ -124,7 +143,9 @@ class GPUMQTTPublisher:
             return False
         
         try:
-            self.client = mqtt.Client(client_id="gpu_model_monitor")
+            # Per-server client id so two hosts don't force-disconnect each other
+            # (an MQTT broker evicts an existing client when a new one reuses its id).
+            self.client = mqtt.Client(client_id=f"gpu_model_monitor_{self.server_id}")
             self.client.on_connect = self.on_connect
             self.client.on_disconnect = self.on_disconnect
             
@@ -159,13 +180,15 @@ class GPUMQTTPublisher:
         if not self.connected or not self.gpu_name:
             return
         
-        # Sanitize device name for use in topic
-        device_id = self.gpu_name.lower().replace(' ', '_').replace('-', '_')
-        
+        # Sanitize device name for use in topic, scoped per server so two hosts with the
+        # same GPU model remain distinct Home Assistant devices.
+        gpu_id = self._sanitize(self.gpu_name)
+        device_id = f"{self.server_id}_{gpu_id}"
+
         # Device information
         device_info = {
             "identifiers": [f"gpu_monitor_{device_id}"],
-            "name": f"GPU Monitor - {self.gpu_name}",
+            "name": f"GPU Monitor - {self.server_name} - {self.gpu_name}",
             "model": self.gpu_name,
             "manufacturer": "NVIDIA",
             "sw_version": f"Driver {self.driver_version}, CUDA {self.cuda_version}",

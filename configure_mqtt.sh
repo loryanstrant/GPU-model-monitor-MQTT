@@ -10,6 +10,7 @@ echo "========================================="
 echo ""
 
 # Prompt for MQTT settings
+read -p "Server Name (unique per host, blank = container hostname): " SERVER_NAME
 read -p "MQTT Broker IP/Hostname: " MQTT_HOST
 read -p "MQTT Port [1883]: " MQTT_PORT
 MQTT_PORT=${MQTT_PORT:-1883}
@@ -25,6 +26,7 @@ echo ""
 echo "========================================="
 echo "Configuration Summary:"
 echo "========================================="
+echo "Server Name: ${SERVER_NAME:-<container hostname>}"
 echo "MQTT Host: $MQTT_HOST"
 echo "MQTT Port: $MQTT_PORT"
 echo "SSL/TLS: $MQTT_SSL"
@@ -47,6 +49,7 @@ cd /home/docker/GPUModelMonitorDEV
 cp docker-compose.yml docker-compose.yml.backup
 
 # Update the file using sed
+sed -i "s|SERVER_NAME=.*|SERVER_NAME=$SERVER_NAME|g" docker-compose.yml
 sed -i "s|MQTT_HOST=.*|MQTT_HOST=$MQTT_HOST|g" docker-compose.yml
 sed -i "s|MQTT_PORT=.*|MQTT_PORT=$MQTT_PORT|g" docker-compose.yml
 sed -i "s|MQTT_SSL=.*|MQTT_SSL=$MQTT_SSL|g" docker-compose.yml

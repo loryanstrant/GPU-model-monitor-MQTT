@@ -201,14 +201,21 @@ docker run -d \\
    ```yaml
    environment:
      - TZ=Your/Timezone  # e.g., America/Los_Angeles
+     - SERVER_NAME=  # Unique per host; blank = container hostname
      - MQTT_ENABLED=true
      - MQTT_HOST=mqtt.example.com  # Your MQTT broker
      - MQTT_PORT=1883
      - MQTT_SSL=false  # Set to true if using SSL/TLS
      - MQTT_USERNAME=your_username
      - MQTT_PASSWORD=your_password
-     - MQTT_TOPIC_PREFIX=gpu_monitor  # Default topic prefix
+     - MQTT_TOPIC_PREFIX=gpu_monitor  # Topic root; topics become gpu_monitor/<server>/...
    ```
+
+   > **Running on more than one server?** Give each host a unique `SERVER_NAME`. Topics are
+   > namespaced as `gpu_monitor/<server>/...` and each host appears as its own Home Assistant
+   > device, so multiple servers can share one broker without overwriting each other. Entity
+   > ids below therefore include the server segment (e.g.
+   > `sensor.gpu_monitor_<server>_nvidia_geforce_rtx_5080_temperature`).
 
 2. **Restart the container**:
    ```bash
@@ -242,12 +249,12 @@ automation:
   - alias: \"Notify on High GPU Temperature\"
     trigger:
       - platform: numeric_state
-        entity_id: sensor.gpu_monitor_nvidia_geforce_rtx_5080_temperature
+        entity_id: sensor.gpu_monitor_myserver_nvidia_geforce_rtx_5080_temperature
         above: 80
     action:
       - service: notify.mobile_app
         data:
-          message: \"GPU temperature is {{ states('sensor.gpu_monitor_nvidia_geforce_rtx_5080_temperature') }}°C!\"
+          message: \"GPU temperature is {{ states('sensor.gpu_monitor_myserver_nvidia_geforce_rtx_5080_temperature') }}°C!\"
 ```
 
 ## Configuration
@@ -256,6 +263,7 @@ automation:
 
 #### Basic Configuration
 - `TZ`: Timezone (default: America/Los_Angeles) - affects timestamp display in web interface and MQTT
+- `SERVER_NAME`: Identifier for this host, used to namespace MQTT topics (`gpu_monitor/<server>/...`) and the Home Assistant device so multiple servers can share one broker. Defaults to the container hostname if unset.
 
 #### MQTT Configuration (Optional)
 - `MQTT_ENABLED`: Enable/disable MQTT publishing (default: false)
@@ -264,7 +272,7 @@ automation:
 - `MQTT_SSL`: Enable SSL/TLS for MQTT (default: false)
 - `MQTT_USERNAME`: MQTT authentication username
 - `MQTT_PASSWORD`: MQTT authentication password
-- `MQTT_TOPIC_PREFIX`: Topic prefix for MQTT messages (default: gpu_monitor)
+- `MQTT_TOPIC_PREFIX`: Root prefix for MQTT topics (default: gpu_monitor); topics are published under `<prefix>/<server>/...`
 
 ### Volumes
 
