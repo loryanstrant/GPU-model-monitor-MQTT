@@ -40,11 +40,19 @@ def format_lifetime(seconds):
         return f"{secs}s"
 
 def enrich_processes(processes_json, gpu_memory_total):
-    """Enrich process data with actual OS start times and memory percentages"""
+    """Enrich process data with actual OS start times and memory percentages.
+
+    Always returns a valid JSON string. When the GPU has no processes the
+    upstream query yields blank/non-JSON input; return an empty array ("[]")
+    rather than echoing the bad input back, so downstream consumers
+    (gpu_current_stats.json / mqtt_publisher) never receive malformed JSON.
+    """
+    if not processes_json or not processes_json.strip():
+        return "[]"
     try:
         processes = json.loads(processes_json)
         if not isinstance(processes, list):
-            return processes_json
+            return "[]"
         
         current_time = datetime.now().timestamp()
         
@@ -72,7 +80,7 @@ def enrich_processes(processes_json, gpu_memory_total):
         return json.dumps(processes)
     except Exception as e:
         print(f"Error enriching processes: {e}", file=sys.stderr)
-        return processes_json
+        return "[]"
 
 if __name__ == '__main__':
     # Read total GPU memory from environment variable

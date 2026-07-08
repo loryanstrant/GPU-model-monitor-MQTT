@@ -382,7 +382,9 @@ SQL
         log_debug "Current processes query returned: ${result:0:200}..."
         # Enrich with actual OS process start times and memory percentages
         if [ -f "$BASE_DIR/enrich_processes.py" ] && command -v python3 &> /dev/null; then
-            result=$(echo "$result" | GPU_MEMORY_TOTAL="$mem_total" python3 "$BASE_DIR/enrich_processes.py" 2>&1)
+            # Capture stdout only — enrich_processes.py logs to stderr, and merging it
+            # into $result (2>&1) corrupts the JSON when the GPU has no processes.
+            result=$(echo "$result" | GPU_MEMORY_TOTAL="$mem_total" python3 "$BASE_DIR/enrich_processes.py" 2>/dev/null)
             if [ $? -ne 0 ]; then
                 log_warning "Failed to enrich process data with actual start times"
             fi
