@@ -2,10 +2,15 @@
 
 The GPU Model Monitor now publishes detailed GPU process information to MQTT.
 
+> **Note:** Topics and Home Assistant entity ids are namespaced per server. The examples
+> below use `myserver` as the `SERVER_NAME` — substitute your own. Topics are
+> `gpu_monitor/<server>/...` and entities are
+> `sensor.gpu_monitor_<server>_<gpu>_...`.
+
 ## New MQTT Topics
 
 ### 1. Active Processes Topic
-**Topic:** `gpu_monitor/active_processes`
+**Topic:** `gpu_monitor/myserver/active_processes`
 
 **State Value:** Count of active processes
 
@@ -56,7 +61,7 @@ The GPU Model Monitor now publishes detailed GPU process information to MQTT.
 - `status`: Always "active" for current processes
 
 ### 2. Process History Topic
-**Topic:** `gpu_monitor/process_history`
+**Topic:** `gpu_monitor/myserver/process_history`
 
 **State Value:** Total number of historical processes (last 50)
 
@@ -93,12 +98,12 @@ The GPU Model Monitor now publishes detailed GPU process information to MQTT.
 ## Home Assistant Sensors
 
 ### GPU Active Processes Sensor
-- **Entity ID:** `sensor.gpu_monitor_nvidia_geforce_rtx_5080_active_processes`
+- **Entity ID:** `sensor.gpu_monitor_myserver_nvidia_geforce_rtx_5080_active_processes`
 - **State:** Number of active processes
 - **Attributes:** Full array of process details (see above)
 
 ### GPU Process History Sensor
-- **Entity ID:** `sensor.gpu_monitor_nvidia_geforce_rtx_5080_process_history`
+- **Entity ID:** `sensor.gpu_monitor_myserver_nvidia_geforce_rtx_5080_process_history`
 - **State:** Total number of historical processes
 - **Attributes:** Array of last 50 processes with their history
 
@@ -107,7 +112,7 @@ The GPU Model Monitor now publishes detailed GPU process information to MQTT.
 ### Display Active Process Count
 ```yaml
 type: entity
-entity: sensor.gpu_monitor_nvidia_geforce_rtx_5080_active_processes
+entity: sensor.gpu_monitor_myserver_nvidia_geforce_rtx_5080_active_processes
 name: Active GPU Processes
 ```
 
@@ -115,7 +120,7 @@ name: Active GPU Processes
 ```yaml
 type: markdown
 content: |
-  {% set processes = state_attr('sensor.gpu_monitor_nvidia_geforce_rtx_5080_active_processes', 'processes') %}
+  {% set processes = state_attr('sensor.gpu_monitor_myserver_nvidia_geforce_rtx_5080_active_processes', 'processes') %}
   {% if processes %}
   | PID | Process | Memory | Lifetime |
   |-----|---------|--------|----------|
@@ -133,18 +138,18 @@ automation:
   - alias: "Alert on High GPU Memory Process"
     trigger:
       - platform: state
-        entity_id: sensor.gpu_monitor_nvidia_geforce_rtx_5080_active_processes
+        entity_id: sensor.gpu_monitor_myserver_nvidia_geforce_rtx_5080_active_processes
     condition:
       - condition: template
         value_template: >
-          {% set processes = state_attr('sensor.gpu_monitor_nvidia_geforce_rtx_5080_active_processes', 'processes') %}
+          {% set processes = state_attr('sensor.gpu_monitor_myserver_nvidia_geforce_rtx_5080_active_processes', 'processes') %}
           {{ processes | selectattr('memory_current', '>', 8000) | list | length > 0 }}
     action:
       - service: notify.mobile_app
         data:
           title: "High GPU Memory Usage"
           message: >
-            {% set processes = state_attr('sensor.gpu_monitor_nvidia_geforce_rtx_5080_active_processes', 'processes') %}
+            {% set processes = state_attr('sensor.gpu_monitor_myserver_nvidia_geforce_rtx_5080_active_processes', 'processes') %}
             {% set high_mem_procs = processes | selectattr('memory_current', '>', 8000) | list %}
             Process {{ high_mem_procs[0].name }} (PID {{ high_mem_procs[0].pid }}) is using {{ high_mem_procs[0].memory_current }} MiB
 ```
@@ -173,10 +178,10 @@ You can monitor the MQTT messages using mosquitto_sub:
 mosquitto_sub -h mqtt.strant.casa -u mqtt -P mqtt -t "gpu_monitor/#" -v
 
 # Subscribe only to active processes
-mosquitto_sub -h mqtt.strant.casa -u mqtt -P mqtt -t "gpu_monitor/active_processes" -v
+mosquitto_sub -h mqtt.strant.casa -u mqtt -P mqtt -t "gpu_monitor/myserver/active_processes" -v
 
 # Subscribe only to process history
-mosquitto_sub -h mqtt.strant.casa -u mqtt -P mqtt -t "gpu_monitor/process_history" -v
+mosquitto_sub -h mqtt.strant.casa -u mqtt -P mqtt -t "gpu_monitor/myserver/process_history" -v
 ```
 
 ## Update Frequency

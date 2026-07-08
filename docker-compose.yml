@@ -1,12 +1,16 @@
 services:
   gpu-model-monitor:
     container_name: GPU-Model-Monitor
-    image: ghcr.io/loryanstrant/gpu-model-monitor:latest
+    image: ghcr.io/loryanstrant/gpu-model-monitor-mqtt:latest
     pid: "host"
     ports:
       - "8081:8081"
     environment:
       - TZ=Australia/Melbourne
+      # Server identity — set a unique name per host when multiple servers publish to the
+      # same broker. Scopes MQTT topics (gpu_monitor/<server>/...) and the HA device so
+      # instances don't collide. Defaults to the container hostname if left blank.
+      - SERVER_NAME=
       # MQTT Configuration
       - MQTT_ENABLED=true
       - MQTT_HOST=mqtt.local
