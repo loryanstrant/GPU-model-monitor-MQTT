@@ -1,0 +1,1082 @@
+{
+  "schema_version": "1.0",
+  "repository": "GPU-model-monitor-MQTT",
+  "identity": {
+    "description": "A comprehensive Docker-based NVIDIA GPU monitoring solution with enhanced process tracking capabilities and **Home Assistant integration via MQTT**. This tool monitors GPU metrics in real-time and tracks model/process usage over time, providing insights into GPU utilization, memory consumption, and ",
+    "default_branch": "main",
+    "languages": {
+      "Shell": 4,
+      "Python": 4
+    },
+    "topics": [],
+    "licence": "MIT License",
+    "file_count": 21
+  },
+  "start_here": {
+    "readme": "README.md",
+    "agents_md": "AGENTS.md",
+    "entry_points": [
+      "server.py"
+    ],
+    "decision_records": [],
+    "build_config": [],
+    "source_roots": [
+      "."
+    ]
+  },
+  "documentation": [
+    {
+      "path": ".github/copilot-instructions.md",
+      "title": "Copilot instructions — GPU-model-monitor-MQTT",
+      "lines": 29,
+      "headings": [
+        {
+          "level": 2,
+          "text": "What this repo is",
+          "anchor": "what-this-repo-is"
+        },
+        {
+          "level": 2,
+          "text": "Repo shape",
+          "anchor": "repo-shape"
+        },
+        {
+          "level": 2,
+          "text": "Conventions",
+          "anchor": "conventions"
+        },
+        {
+          "level": 2,
+          "text": "Never",
+          "anchor": "never"
+        }
+      ]
+    },
+    {
+      "path": "FEATURES.md",
+      "title": "GPU Model Monitor - Features Documentation",
+      "lines": 291,
+      "headings": [
+        {
+          "level": 2,
+          "text": "Overview",
+          "anchor": "overview"
+        },
+        {
+          "level": 2,
+          "text": "Core Features",
+          "anchor": "core-features"
+        },
+        {
+          "level": 3,
+          "text": "1. Real-time GPU Metrics",
+          "anchor": "1-real-time-gpu-metrics"
+        },
+        {
+          "level": 3,
+          "text": "2. System Information",
+          "anchor": "2-system-information"
+        },
+        {
+          "level": 3,
+          "text": "3. Process Tracking",
+          "anchor": "3-process-tracking"
+        },
+        {
+          "level": 3,
+          "text": "4. Interactive Dashboard",
+          "anchor": "4-interactive-dashboard"
+        },
+        {
+          "level": 3,
+          "text": "5. Data Management",
+          "anchor": "5-data-management"
+        },
+        {
+          "level": 3,
+          "text": "6. Web Server",
+          "anchor": "6-web-server"
+        },
+        {
+          "level": 3,
+          "text": "7. Docker Integration",
+          "anchor": "7-docker-integration"
+        },
+        {
+          "level": 3,
+          "text": "8. GitHub Actions Integration",
+          "anchor": "8-github-actions-integration"
+        },
+        {
+          "level": 2,
+          "text": "Technical Architecture",
+          "anchor": "technical-architecture"
+        },
+        {
+          "level": 3,
+          "text": "Backend (monitor_gpu.sh)",
+          "anchor": "backend-monitor_gpush"
+        },
+        {
+          "level": 3,
+          "text": "Frontend (gpu-stats.html)",
+          "anchor": "frontend-gpu-statshtml"
+        },
+        {
+          "level": 2,
+          "text": "Usage Patterns",
+          "anchor": "usage-patterns"
+        },
+        {
+          "level": 3,
+          "text": "Model Training Tracking",
+          "anchor": "model-training-tracking"
+        },
+        {
+          "level": 3,
+          "text": "Multi-Process Analysis",
+          "anchor": "multi-process-analysis"
+        },
+        {
+          "level": 3,
+          "text": "Performance Debugging",
+          "anchor": "performance-debugging"
+        },
+        {
+          "level": 3,
+          "text": "Historical Analysis",
+          "anchor": "historical-analysis"
+        },
+        {
+          "level": 2,
+          "text": "Security Features",
+          "anchor": "security-features"
+        },
+        {
+          "level": 2,
+          "text": "Performance Characteristics",
+          "anchor": "performance-characteristics"
+        },
+        {
+          "level": 2,
+          "text": "Extensibility",
+          "anchor": "extensibility"
+        },
+        {
+          "level": 2,
+          "text": "Browser Compatibility",
+          "anchor": "browser-compatibility"
+        },
+        {
+          "level": 2,
+          "text": "Future Enhancements",
+          "anchor": "future-enhancements"
+        }
+      ]
+    },
+    {
+      "path": "IMPLEMENTATION_SUMMARY.md",
+      "title": "GPU Model Monitor - Implementation Summary",
+      "lines": 334,
+      "headings": [
+        {
+          "level": 2,
+          "text": "What Was Built",
+          "anchor": "what-was-built"
+        },
+        {
+          "level": 2,
+          "text": "Repository Structure",
+          "anchor": "repository-structure"
+        },
+        {
+          "level": 2,
+          "text": "Key Files Explained",
+          "anchor": "key-files-explained"
+        },
+        {
+          "level": 3,
+          "text": "monitor_gpu.sh",
+          "anchor": "monitor_gpush"
+        },
+        {
+          "level": 3,
+          "text": "gpu-stats.html",
+          "anchor": "gpu-statshtml"
+        },
+        {
+          "level": 3,
+          "text": "server.py",
+          "anchor": "serverpy"
+        },
+        {
+          "level": 3,
+          "text": "Dockerfile",
+          "anchor": "dockerfile"
+        },
+        {
+          "level": 3,
+          "text": "docker-compose.yml",
+          "anchor": "docker-composeyml"
+        },
+        {
+          "level": 3,
+          "text": ".github/workflows/docker-publish.yml",
+          "anchor": "githubworkflowsdocker-publishyml"
+        },
+        {
+          "level": 2,
+          "text": "Database Schema",
+          "anchor": "database-schema"
+        },
+        {
+          "level": 3,
+          "text": "gpu_metrics table",
+          "anchor": "gpu_metrics-table"
+        },
+        {
+          "level": 3,
+          "text": "gpu_processes table",
+          "anchor": "gpu_processes-table"
+        },
+        {
+          "level": 3,
+          "text": "process_snapshots table",
+          "anchor": "process_snapshots-table"
+        },
+        {
+          "level": 2,
+          "text": "Data Flow",
+          "anchor": "data-flow"
+        },
+        {
+          "level": 2,
+          "text": "Process Tracking Flow",
+          "anchor": "process-tracking-flow"
+        },
+        {
+          "level": 2,
+          "text": "Key Features Implementation",
+          "anchor": "key-features-implementation"
+        },
+        {
+          "level": 3,
+          "text": "Driver & CUDA Version",
+          "anchor": "driver--cuda-version"
+        },
+        {
+          "level": 3,
+          "text": "Process Monitoring",
+          "anchor": "process-monitoring"
+        },
+        {
+          "level": 3,
+          "text": "Process Lifetime Tracking",
+          "anchor": "process-lifetime-tracking"
+        },
+        {
+          "level": 3,
+          "text": "Sorting & Filtering",
+          "anchor": "sorting--filtering"
+        },
+        {
+          "level": 2,
+          "text": "Security Measures",
+          "anchor": "security-measures"
+        },
+        {
+          "level": 2,
+          "text": "Performance",
+          "anchor": "performance"
+        },
+        {
+          "level": 2,
+          "text": "Deployment Options",
+          "anchor": "deployment-options"
+        },
+        {
+          "level": 3,
+          "text": "Option 1: Pre-built Image (GHCR)",
+          "anchor": "option-1-pre-built-image-ghcr"
+        },
+        {
+          "level": 3,
+          "text": "Option 2: Docker Compose",
+          "anchor": "option-2-docker-compose"
+        },
+        {
+          "level": 3,
+          "text": "Option 3: Build from Source",
+          "anchor": "option-3-build-from-source"
+        },
+        {
+          "level": 3,
+          "text": "Option 4: Setup Script",
+          "anchor": "option-4-setup-script"
+        },
+        {
+          "level": 2,
+          "text": "Browser Access",
+          "anchor": "browser-access"
+        },
+        {
+          "level": 2,
+          "text": "GHCR Publishing",
+          "anchor": "ghcr-publishing"
+        },
+        {
+          "level": 2,
+          "text": "Testing Status",
+          "anchor": "testing-status"
+        },
+        {
+          "level": 2,
+          "text": "Requirements Met",
+          "anchor": "requirements-met"
+        },
+        {
+          "level": 2,
+          "text": "Additional Features (Beyond Requirements)",
+          "anchor": "additional-features-beyond-requirements"
+        },
+        {
+          "level": 2,
+          "text": "Lines of Code",
+          "anchor": "lines-of-code"
+        },
+        {
+          "level": 2,
+          "text": "What Happens Next",
+          "anchor": "what-happens-next"
+        },
+        {
+          "level": 2,
+          "text": "Success Criteria",
+          "anchor": "success-criteria"
+        }
+      ]
+    },
+    {
+      "path": "MQTT_PROCESS_INFO.md",
+      "title": "MQTT Process Information Publishing",
+      "lines": 197,
+      "headings": [
+        {
+          "level": 2,
+          "text": "New MQTT Topics",
+          "anchor": "new-mqtt-topics"
+        },
+        {
+          "level": 3,
+          "text": "1. Active Processes Topic",
+          "anchor": "1-active-processes-topic"
+        },
+        {
+          "level": 3,
+          "text": "2. Process History Topic",
+          "anchor": "2-process-history-topic"
+        },
+        {
+          "level": 2,
+          "text": "Home Assistant Sensors",
+          "anchor": "home-assistant-sensors"
+        },
+        {
+          "level": 3,
+          "text": "GPU Active Processes Sensor",
+          "anchor": "gpu-active-processes-sensor"
+        },
+        {
+          "level": 3,
+          "text": "GPU Process History Sensor",
+          "anchor": "gpu-process-history-sensor"
+        },
+        {
+          "level": 2,
+          "text": "Usage in Home Assistant",
+          "anchor": "usage-in-home-assistant"
+        },
+        {
+          "level": 3,
+          "text": "Display Active Process Count",
+          "anchor": "display-active-process-count"
+        },
+        {
+          "level": 3,
+          "text": "Display Process Details in a Table",
+          "anchor": "display-process-details-in-a-table"
+        },
+        {
+          "level": 3,
+          "text": "Automation Example: Alert on High Memory Process",
+          "anchor": "automation-example-alert-on-high-memory-process"
+        },
+        {
+          "level": 2,
+          "text": "Testing",
+          "anchor": "testing"
+        },
+        {
+          "level": 2,
+          "text": "Subscribe to MQTT Topics",
+          "anchor": "subscribe-to-mqtt-topics"
+        },
+        {
+          "level": 2,
+          "text": "Update Frequency",
+          "anchor": "update-frequency"
+        },
+        {
+          "level": 2,
+          "text": "Notes",
+          "anchor": "notes"
+        }
+      ]
+    },
+    {
+      "path": "README.md",
+      "title": "GPU Model Monitor",
+      "lines": 362,
+      "headings": [
+        {
+          "level": 2,
+          "text": "Features",
+          "anchor": "features"
+        },
+        {
+          "level": 2,
+          "text": "Screenshots",
+          "anchor": "screenshots"
+        },
+        {
+          "level": 3,
+          "text": "Home Assistant - device",
+          "anchor": "home-assistant---device"
+        },
+        {
+          "level": 3,
+          "text": "Home Assistant - entity attributes",
+          "anchor": "home-assistant---entity-attributes"
+        },
+        {
+          "level": 3,
+          "text": "Web interface - graph",
+          "anchor": "web-interface---graph"
+        },
+        {
+          "level": 3,
+          "text": "Web interface - active processes",
+          "anchor": "web-interface---active-processes"
+        },
+        {
+          "level": 3,
+          "text": "Web interface - process history",
+          "anchor": "web-interface---process-history"
+        },
+        {
+          "level": 2,
+          "text": "Quick Start",
+          "anchor": "quick-start"
+        },
+        {
+          "level": 3,
+          "text": "Using Pre-built Image from GHCR",
+          "anchor": "using-pre-built-image-from-ghcr"
+        },
+        {
+          "level": 3,
+          "text": "Using Docker Compose",
+          "anchor": "using-docker-compose"
+        },
+        {
+          "level": 2,
+          "text": "Prerequisites",
+          "anchor": "prerequisites"
+        },
+        {
+          "level": 3,
+          "text": "Installing NVIDIA Container Toolkit",
+          "anchor": "installing-nvidia-container-toolkit"
+        },
+        {
+          "level": 2,
+          "text": "Building from Source",
+          "anchor": "building-from-source"
+        },
+        {
+          "level": 2,
+          "text": "Dashboard Features",
+          "anchor": "dashboard-features"
+        },
+        {
+          "level": 3,
+          "text": "Current Metrics",
+          "anchor": "current-metrics"
+        },
+        {
+          "level": 3,
+          "text": "Performance History",
+          "anchor": "performance-history"
+        },
+        {
+          "level": 3,
+          "text": "Active GPU Processes",
+          "anchor": "active-gpu-processes"
+        },
+        {
+          "level": 3,
+          "text": "Process History",
+          "anchor": "process-history"
+        },
+        {
+          "level": 2,
+          "text": "Home Assistant Integration",
+          "anchor": "home-assistant-integration"
+        },
+        {
+          "level": 3,
+          "text": "Setting Up MQTT",
+          "anchor": "setting-up-mqtt"
+        },
+        {
+          "level": 3,
+          "text": "Available Sensors",
+          "anchor": "available-sensors"
+        },
+        {
+          "level": 3,
+          "text": "Example Home Assistant Automation",
+          "anchor": "example-home-assistant-automation"
+        },
+        {
+          "level": 2,
+          "text": "Configuration",
+          "anchor": "configuration"
+        },
+        {
+          "level": 3,
+          "text": "Environment Variables",
+          "anchor": "environment-variables"
+        },
+        {
+          "level": 3,
+          "text": "Volumes",
+          "anchor": "volumes"
+        },
+        {
+          "level": 3,
+          "text": "Ports",
+          "anchor": "ports"
+        },
+        {
+          "level": 2,
+          "text": "Data Persistence",
+          "anchor": "data-persistence"
+        },
+        {
+          "level": 2,
+          "text": "Troubleshooting",
+          "anchor": "troubleshooting"
+        },
+        {
+          "level": 3,
+          "text": "NVIDIA SMI not found",
+          "anchor": "nvidia-smi-not-found"
+        },
+        {
+          "level": 3,
+          "text": "Container fails to start",
+          "anchor": "container-fails-to-start"
+        },
+        {
+          "level": 3,
+          "text": "Dashboard not accessible",
+          "anchor": "dashboard-not-accessible"
+        },
+        {
+          "level": 3,
+          "text": "Process tracking not working",
+          "anchor": "process-tracking-not-working"
+        },
+        {
+          "level": 3,
+          "text": "Process lifetimes resetting",
+          "anchor": "process-lifetimes-resetting"
+        },
+        {
+          "level": 3,
+          "text": "MQTT not connecting",
+          "anchor": "mqtt-not-connecting"
+        },
+        {
+          "level": 3,
+          "text": "Home Assistant sensors not appearing",
+          "anchor": "home-assistant-sensors-not-appearing"
+        },
+        {
+          "level": 2,
+          "text": "Architecture",
+          "anchor": "architecture"
+        },
+        {
+          "level": 2,
+          "text": "Development Approach",
+          "anchor": "development-approach"
+        },
+        {
+          "level": 2,
+          "text": "License",
+          "anchor": "license"
+        },
+        {
+          "level": 2,
+          "text": "Acknowledgments",
+          "anchor": "acknowledgments"
+        },
+        {
+          "level": 2,
+          "text": "Contributing",
+          "anchor": "contributing"
+        }
+      ]
+    },
+    {
+      "path": "README_MQTT.md",
+      "title": "GPU Model Monitor with MQTT Support",
+      "lines": 191,
+      "headings": [
+        {
+          "level": 2,
+          "text": "New Features",
+          "anchor": "new-features"
+        },
+        {
+          "level": 2,
+          "text": "MQTT Configuration",
+          "anchor": "mqtt-configuration"
+        },
+        {
+          "level": 2,
+          "text": "Published MQTT Topics",
+          "anchor": "published-mqtt-topics"
+        },
+        {
+          "level": 2,
+          "text": "Home Assistant Integration",
+          "anchor": "home-assistant-integration"
+        },
+        {
+          "level": 3,
+          "text": "Process Attributes",
+          "anchor": "process-attributes"
+        },
+        {
+          "level": 2,
+          "text": "Installation",
+          "anchor": "installation"
+        },
+        {
+          "level": 3,
+          "text": "1. Create the directory structure",
+          "anchor": "1-create-the-directory-structure"
+        },
+        {
+          "level": 3,
+          "text": "2. Copy files to the server",
+          "anchor": "2-copy-files-to-the-server"
+        },
+        {
+          "level": 3,
+          "text": "3. Configure MQTT settings",
+          "anchor": "3-configure-mqtt-settings"
+        },
+        {
+          "level": 3,
+          "text": "4. Build and run",
+          "anchor": "4-build-and-run"
+        },
+        {
+          "level": 3,
+          "text": "5. Verify operation",
+          "anchor": "5-verify-operation"
+        },
+        {
+          "level": 2,
+          "text": "Testing",
+          "anchor": "testing"
+        },
+        {
+          "level": 3,
+          "text": "Test MQTT Connection",
+          "anchor": "test-mqtt-connection"
+        },
+        {
+          "level": 3,
+          "text": "Disable MQTT",
+          "anchor": "disable-mqtt"
+        },
+        {
+          "level": 2,
+          "text": "Troubleshooting",
+          "anchor": "troubleshooting"
+        },
+        {
+          "level": 3,
+          "text": "MQTT not connecting",
+          "anchor": "mqtt-not-connecting"
+        },
+        {
+          "level": 3,
+          "text": "Home Assistant not discovering sensors",
+          "anchor": "home-assistant-not-discovering-sensors"
+        },
+        {
+          "level": 3,
+          "text": "SSL/TLS issues",
+          "anchor": "ssltls-issues"
+        },
+        {
+          "level": 2,
+          "text": "Differences from Production Version",
+          "anchor": "differences-from-production-version"
+        },
+        {
+          "level": 2,
+          "text": "Web Interface",
+          "anchor": "web-interface"
+        },
+        {
+          "level": 2,
+          "text": "Original Project",
+          "anchor": "original-project"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "source_roots": [
+      "."
+    ],
+    "symbol_source": "repomix (tree-sitter signatures)",
+    "routes": [],
+    "files": [
+      {
+        "path": "enrich_processes.py",
+        "symbols": [
+          {
+            "kind": "function",
+            "name": "get_process_start_time",
+            "parent": "",
+            "signature": "get_process_start_time(pid)"
+          },
+          {
+            "kind": "function",
+            "name": "format_lifetime",
+            "parent": "",
+            "signature": "format_lifetime(seconds)"
+          },
+          {
+            "kind": "function",
+            "name": "enrich_processes",
+            "parent": "",
+            "signature": "enrich_processes(processes_json, gpu_memory_total)"
+          }
+        ]
+      },
+      {
+        "path": "monitor_gpu.sh",
+        "symbols": [
+          {
+            "kind": "function",
+            "name": "log_error",
+            "parent": "",
+            "signature": "log_error()"
+          },
+          {
+            "kind": "function",
+            "name": "log_warning",
+            "parent": "",
+            "signature": "log_warning()"
+          },
+          {
+            "kind": "function",
+            "name": "log_debug",
+            "parent": "",
+            "signature": "log_debug()"
+          },
+          {
+            "kind": "function",
+            "name": "log_info",
+            "parent": "",
+            "signature": "log_info()"
+          },
+          {
+            "kind": "function",
+            "name": "publish_to_mqtt",
+            "parent": "",
+            "signature": "publish_to_mqtt()"
+          }
+        ]
+      },
+      {
+        "path": "monitor_gpu_mqtt.sh",
+        "symbols": [
+          {
+            "kind": "function",
+            "name": "log_error",
+            "parent": "",
+            "signature": "log_error()"
+          },
+          {
+            "kind": "function",
+            "name": "log_warning",
+            "parent": "",
+            "signature": "log_warning()"
+          },
+          {
+            "kind": "function",
+            "name": "log_debug",
+            "parent": "",
+            "signature": "log_debug()"
+          },
+          {
+            "kind": "function",
+            "name": "log_info",
+            "parent": "",
+            "signature": "log_info()"
+          },
+          {
+            "kind": "function",
+            "name": "publish_to_mqtt",
+            "parent": "",
+            "signature": "publish_to_mqtt()"
+          },
+          {
+            "kind": "function",
+            "name": "initialize_database",
+            "parent": "",
+            "signature": "initialize_database()"
+          },
+          {
+            "kind": "function",
+            "name": "is_valid_pid",
+            "parent": "",
+            "signature": "is_valid_pid()"
+          },
+          {
+            "kind": "function",
+            "name": "update_process_tracking",
+            "parent": "",
+            "signature": "update_process_tracking()"
+          },
+          {
+            "kind": "function",
+            "name": "get_current_processes",
+            "parent": "",
+            "signature": "get_current_processes()"
+          },
+          {
+            "kind": "function",
+            "name": "get_process_history",
+            "parent": "",
+            "signature": "get_process_history()"
+          },
+          {
+            "kind": "function",
+            "name": "safe_write_json",
+            "parent": "",
+            "signature": "safe_write_json()"
+          },
+          {
+            "kind": "function",
+            "name": "update_stats",
+            "parent": "",
+            "signature": "update_stats()"
+          },
+          {
+            "kind": "function",
+            "name": "export_history_json",
+            "parent": "",
+            "signature": "export_history_json()"
+          },
+          {
+            "kind": "function",
+            "name": "export_process_history_json",
+            "parent": "",
+            "signature": "export_process_history_json()"
+          },
+          {
+            "kind": "function",
+            "name": "cleanup_old_data",
+            "parent": "",
+            "signature": "cleanup_old_data()"
+          }
+        ]
+      },
+      {
+        "path": "mqtt_publisher.py",
+        "symbols": [
+          {
+            "kind": "class",
+            "name": "GPUMQTTPublisher",
+            "parent": "",
+            "signature": "class GPUMQTTPublisher"
+          },
+          {
+            "kind": "function",
+            "name": "get_process_start_time",
+            "parent": "GPUMQTTPublisher",
+            "signature": "get_process_start_time(self, pid)"
+          },
+          {
+            "kind": "function",
+            "name": "format_lifetime",
+            "parent": "GPUMQTTPublisher",
+            "signature": "format_lifetime(self, seconds)"
+          },
+          {
+            "kind": "function",
+            "name": "load_gpu_config",
+            "parent": "GPUMQTTPublisher",
+            "signature": "load_gpu_config(self)"
+          },
+          {
+            "kind": "function",
+            "name": "on_connect",
+            "parent": "GPUMQTTPublisher",
+            "signature": "on_connect(self, client, userdata, flags, rc)"
+          },
+          {
+            "kind": "function",
+            "name": "on_disconnect",
+            "parent": "GPUMQTTPublisher",
+            "signature": "on_disconnect(self, client, userdata, rc)"
+          },
+          {
+            "kind": "function",
+            "name": "connect",
+            "parent": "GPUMQTTPublisher",
+            "signature": "connect(self)"
+          },
+          {
+            "kind": "function",
+            "name": "publish_discovery",
+            "parent": "GPUMQTTPublisher",
+            "signature": "publish_discovery(self)"
+          },
+          {
+            "kind": "function",
+            "name": "publish_active_processes",
+            "parent": "GPUMQTTPublisher",
+            "signature": "publish_active_processes(self, processes)"
+          },
+          {
+            "kind": "function",
+            "name": "publish_process_history",
+            "parent": "GPUMQTTPublisher",
+            "signature": "publish_process_history(self)"
+          },
+          {
+            "kind": "function",
+            "name": "publish_metrics",
+            "parent": "GPUMQTTPublisher",
+            "signature": "publish_metrics(self, metrics_data)"
+          },
+          {
+            "kind": "function",
+            "name": "disconnect",
+            "parent": "GPUMQTTPublisher",
+            "signature": "disconnect(self)"
+          },
+          {
+            "kind": "function",
+            "name": "main",
+            "parent": "",
+            "signature": "main()"
+          }
+        ]
+      },
+      {
+        "path": "server.py",
+        "symbols": [
+          {
+            "kind": "function",
+            "name": "handle_static",
+            "parent": "",
+            "signature": "handle_static(request)"
+          }
+        ]
+      },
+      {
+        "path": "setup.sh",
+        "symbols": [
+          {
+            "kind": "function",
+            "name": "check_requirements",
+            "parent": "",
+            "signature": "check_requirements()"
+          },
+          {
+            "kind": "function",
+            "name": "start_service",
+            "parent": "",
+            "signature": "start_service()"
+          },
+          {
+            "kind": "function",
+            "name": "stop_service",
+            "parent": "",
+            "signature": "stop_service()"
+          },
+          {
+            "kind": "function",
+            "name": "restart_service",
+            "parent": "",
+            "signature": "restart_service()"
+          },
+          {
+            "kind": "function",
+            "name": "status_service",
+            "parent": "",
+            "signature": "status_service()"
+          },
+          {
+            "kind": "function",
+            "name": "logs_service",
+            "parent": "",
+            "signature": "logs_service()"
+          },
+          {
+            "kind": "function",
+            "name": "build_service",
+            "parent": "",
+            "signature": "build_service()"
+          }
+        ]
+      }
+    ]
+  },
+  "tests": [
+    "test_process_mqtt.py"
+  ],
+  "operations": [
+    ".dockerignore",
+    ".github/workflows/docker-publish.yml",
+    "Dockerfile",
+    "docker-compose.yml"
+  ],
+  "limitations": {
+    "unparsed_languages": [
+      "Shell"
+    ],
+    "excluded_dirs": [],
+    "code_map_truncated": false,
+    "code_map_symbols_capped": true,
+    "tracked_files_only": true
+  },
+  "generated": {
+    "source_commit": "1d738ab4ce2692f361a92fc5c98f162f4f288fc4",
+    "content_hash": "805c33afd0811801",
+    "generator": "navgen"
+  }
+}
