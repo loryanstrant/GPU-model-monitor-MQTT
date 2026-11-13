@@ -74,8 +74,12 @@ docker run -d \\
   -v ./logs:/app/logs:rw \\
   --gpus all \\
   --restart unless-stopped \\
-  ghcr.io/loryanstrant/gpu-model-monitor:latest
+  ghcr.io/loryanstrant/gpu-model-monitor-mqtt:latest
 ```
+
+> Image renamed 2026-07-08: this used to publish as `ghcr.io/loryanstrant/gpu-model-monitor`
+> (that GHCR package has since been deleted). If a compose file or script still references
+> the old name, update it to the `-mqtt` image above.
 
 **Note:** The `--pid=host` flag is required for the container to see GPU processes running on the host and in other containers. Without this flag, only processes within the container itself will be visible.
 
@@ -83,8 +87,8 @@ docker run -d \\
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/loryanstrant/gpu-model-monitor.git
-cd gpu-model-monitor
+git clone https://github.com/loryanstrant/GPU-model-monitor-MQTT.git
+cd GPU-model-monitor-MQTT
 ```
 
 2. (Optional) Configure MQTT for Home Assistant integration:
@@ -151,11 +155,11 @@ For other distributions, check the [official documentation](https://docs.nvidia.
 
 ```bash
 # Clone the repository
-git clone https://github.com/loryanstrant/gpu-model-monitor.git
-cd gpu-model-monitor
+git clone https://github.com/loryanstrant/GPU-model-monitor-MQTT.git
+cd GPU-model-monitor-MQTT
 
 # Build the image
-docker build -t gpu-model-monitor .
+docker build -t gpu-model-monitor-mqtt .
 
 # Run the container
 docker run -d \\
@@ -167,7 +171,7 @@ docker run -d \\
   -v ./logs:/app/logs:rw \\
   --gpus all \\
   --restart unless-stopped \\
-  gpu-model-monitor
+  gpu-model-monitor-mqtt
 ```
 
 ## Dashboard Features
@@ -348,6 +352,34 @@ Data retention:
 
 ## Development Approach
 <img width="256" height="256" alt="image" src="https://github.com/user-attachments/assets/9bdff80e-30d2-4c30-acb2-37154d7748e1\" />
+
+## Known issues (fixed)
+
+- **Idle-GPU crash (fixed 2026-07-08).** On a GPU with no compute processes, the
+  `nvidia-smi` process query returns a blank line. `enrich_processes.py` tried to
+  `json.loads` that blank input and failed; `monitor_gpu_mqtt.sh` was merging stderr
+  into the same stream (`2>&1`), so the failure corrupted `gpu_current_stats.json` —
+  the MQTT publisher kept sending discovery messages but no state. Fix: the enrich
+  step now returns `[]` on blank/bad input, and the shell script redirects stderr to
+  `2>/dev/null` instead of merging it.
+
+## Deployment (homelab)
+
+This repo's canonical home is Gitea (`gitea.strant.casa/loryanstrant`), push-mirrored
+to this GitHub repo; CI builds the GHCR image off GitHub `main`. In this homelab it is
+deployed via Dockhand as the `gpu-model-monitor` stack on two hosts, each with its own
+`SERVER_NAME` (see the Home Assistant Integration section above for why that matters
+when more than one host shares a broker):
+
+| Host | Dockhand env | `SERVER_NAME` | GPU |
+|---|---|---|---|
+| TELETRAAN-I | 4 | `teletraan-i` | RTX 5080 |
+| TRYPTICON | 9 | `trypticon` | RTX 4060 Laptop |
+
+Both deployments mount their volumes under `/home/docker/GPU-Model-Monitor/`, run with
+`gpus: all` and `pid: host`, and publish to broker `mqtt.strant.casa`. The broker
+credential is not written here in plaintext — it lives in Vaultwarden (org **Strant
+Family**, collection **LS Development**) and/or the stack's Dockhand env.
 
 ## License
 
