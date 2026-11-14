@@ -436,7 +436,7 @@
     {
       "path": "README.md",
       "title": "GPU Model Monitor",
-      "lines": 362,
+      "lines": 394,
       "headings": [
         {
           "level": 2,
@@ -622,6 +622,16 @@
           "level": 2,
           "text": "Development Approach",
           "anchor": "development-approach"
+        },
+        {
+          "level": 2,
+          "text": "Known issues (fixed)",
+          "anchor": "known-issues-fixed"
+        },
+        {
+          "level": 2,
+          "text": "Deployment (homelab)",
+          "anchor": "deployment-homelab"
         },
         {
           "level": 2,
@@ -1075,8 +1085,8 @@
     "tracked_files_only": true
   },
   "generated": {
-    "source_commit": "1d738ab4ce2692f361a92fc5c98f162f4f288fc4",
-    "content_hash": "805c33afd0811801",
+    "source_commit": "917f4b2e9ce6026ce60c98772812fe979058d8e4",
+    "content_hash": "f663c236ed81808c",
     "generator": "navgen"
   }
 }
